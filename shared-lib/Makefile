@@ -15,13 +15,13 @@ $(TEST_APPS): %: $(addsuffix .o,$(TEST_APPS)) sharedlib.o
 	$(CXX) -rdynamic $^ -o $@ -ldl
 
 $(TEST_LIBS): %: $(addsuffix .o,$(TEST_LIBS))
-	$(CXX) -shared $^ -o $(addsuffix .so,$@)
+	$(CXX) -shared $^ -o lib$(addsuffix .so,$@)
 
 .PHONY: clean 	
 clean:
 	$(RM) \
  	$(TEST_APPS) \
- 	$(addsuffix .so,$(TEST_LIBS)) \
+ 	$(addprefix lib,$(addsuffix .so,$(TEST_LIBS))) \
  	$(addsuffix .o,$(TEST_APPS)) \
  	$(addsuffix .o,$(TEST_LIBS)) \
  	$(addsuffix .d,$(TEST_APPS)) \

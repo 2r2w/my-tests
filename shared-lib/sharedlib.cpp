@@ -9,7 +9,8 @@
 #include <iostream>
 
 #if defined _WIN32
-#include <stringstream>
+#include <windows.h>
+#include <sstream>
 #elif defined __GNUC__
 #include <dlfcn.h>
 #endif
@@ -54,12 +55,13 @@ struct SharedLIbrary::_impl
 			lasterr.assign(str);
 		}
 	}
-
-	void *load(const std::string &path)
-	{
 #if defined _WIN32
+	HMODULE load(const std::string &path)
+	{
 		libhandle=LoadLibrary(path.c_str());
 #elif defined __GNUC__
+	void *load(const std::string &path)
+	{
 		libhandle=dlopen(path.c_str(),RTLD_LAZY);
 #endif
 		return libhandle;
@@ -68,7 +70,7 @@ struct SharedLIbrary::_impl
 	bool unload(void)
 	{
 #if defined _WIN32
-		return FreeLibrary(libhandle);
+		return 1==FreeLibrary(libhandle);
 #elif defined __GNUC__
 		return 0==dlclose(libhandle);
 #endif
