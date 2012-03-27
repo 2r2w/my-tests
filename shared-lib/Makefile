@@ -11,11 +11,13 @@ all:$(TEST_APPS) $(TEST_LIBS)
 -include $(addsuffix .d,$(TEST_LIBS))
 -include sharedlib.d
 
-$(TEST_APPS): %: $(addsuffix .o,$(TEST_APPS)) sharedlib.o
-	$(CXX) -rdynamic $^ -o $@ -ldl
+$(TEST_APPS): % : %.o sharedlib.o
+	$(CXX) -static-libstdc++ -static-libgcc -rdynamic $^ -o $@ -ldl
 
-$(TEST_LIBS): %: $(addsuffix .o,$(TEST_LIBS))
-	$(CXX) -shared $^ -o lib$(addsuffix .so,$@)
+.PHONY: $(TEST_LIBS)
+$(TEST_LIBS): $(patsubst %,lib%.so,$(TEST_LIBS))
+$(patsubst %,lib%.so,$(TEST_LIBS)): lib%.so: %.o
+	$(CC) -static-libgcc -shared $^ -o $@
 
 .PHONY: clean 	
 clean:
